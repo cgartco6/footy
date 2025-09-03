@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootyPredict AI - Advanced Soccer Predictions</title>
+    <style>
+        :root {
+            --primary: #1a472a;
+            --secondary: #2e8b57;
+            --accent: #00b894;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+        
+        nav a:hover {
+            opacity: 0.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .ticker-container {
+            background-color: var(--dark);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ticker-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            align-items: center;
+        }
+        
+        .ticker-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .ticker-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .ticker-controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+        }
+        
+        .ticker {
+            display: flex;
+            animation: ticker-scroll 30s linear infinite;
+            gap: 2rem;
+            padding: 0.5rem 0;
+        }
+        
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .match-time {
+            background-color: var(--accent);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .match-teams {
+            font-weight: 500;
+        }
+        
+        .league-badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        
+        @keyframes ticker-scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .prediction-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .prediction-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .match-time-small {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .team {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 40%;
+        }
+        
+        .team-logo {
+            width: 50px;
+            height: 50px;
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .team-name {
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .vs {
+            font-weight: 700;
+            color: #6c757d;
+        }
+        
+        .prediction-details {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .prediction-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .confidence {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .confidence-bar {
+            width: 100px;
+            height: 6px;
+            background-color: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        
+        .confidence-high {
+            background-color: var(--success);
+        }
+        
+        .confidence-medium {
+            background-color: var(--warning);
+        }
+        
+        .confidence-low {
+            background-color: var(--danger);
+        }
+        
+        .ai-analysis {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e8f5e9;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .ai-analysis h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .factors {
+            font-size: 0.9rem;
+            color: #495057;
+        }
+        
+        .factor {
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .factor-icon {
+            color: var(--accent);
+        }
+        
+        .card-footer {
+            padding: 1rem;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .accuracy {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .correct {
+            color: var(--success);
+        }
+        
+        .incorrect {
+            color: var(--danger);
+        }
+        
+        .last-updated {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .footer-section p {
+            line-height: 1.6;
+            color: #adb5bd;
+        }
+        
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #495057;
+            color: #adb5bd;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+            }
+            
+            .predictions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, #00b894 0%, #007bff 100%);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">⚽</span>
+                <h1>FootyPredict AI</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Leagues</a></li>
+                    <li><a href="#">Analysis</a></li>
+                    <li><a href="#">Premium</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="ticker-container">
+            <div class="ticker-header">
+                <div class="ticker-title">
+                    <span>📅 Today's Matches</span>
+                </div>
+                <div class="ticker-controls">
+                    <button onclick="pauseTicker()">⏸️</button>
+                    <button onclick="playTicker()">▶️</button>
+                </div>
+            </div>
+            <div class="ticker" id="matchTicker">
+                <!-- Ticker items will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="league-filter">League:</label>
+                <select id="league-filter">
+                    <option value="all">All Leagues</option>
+                    <option value="premier-league">Premier League</option>
+                    <option value="la-liga">La Liga</option>
+                    <option value="serie-a">Serie A</option>
+                    <option value="bundesliga">Bundesliga</option>
+                    <option value="ligue-1">Ligue 1</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="time-filter">Time:</label>
+                <select id="time-filter">
+                    <option value="all">All Times</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="today">Today</option>
+                    <option value="tomorrow">Tomorrow</option>
+                </select>
+            </div>
+            <div class="date-filter">
+                <input type="date" id="date-picker">
+            </div>
+            <div class="filter-group">
+                <button onclick="updatePredictions()" style="padding: 0.5rem 1rem; background-color: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+
+        <div class="predictions-grid" id="predictionsContainer">
+            <!-- Prediction cards will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About FootyPredict AI</h3>
+                <p>Our synthetic intelligence system analyzes hundreds of data points to generate accurate soccer predictions, continuously learning and improving from past results.</p>
+            </div>
+            <div class="footer-section">
+                <h3>How It Works</h3>
+                <p>Our AI evaluates player performance, team stats, injuries, transfers, weather conditions, and many other factors to predict match outcomes with confidence percentages.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Disclaimer</h3>
+                <p>Predictions are based on statistical models and should be used for informational purposes only. No guarantee of accuracy is provided. Please gamble responsibly.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 FootyPredict AI. All rights reserved. This is a demonstration of a synthetic intelligence system.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data for matches and predictions
+        const matches = [
+            {
+                id: 1,
+                league: "Premier League",
+                homeTeam: "Manchester City",
+                awayTeam: "Liverpool",
+                time: "15:00",
+                date: "2023-11-12",
+                prediction: "1",
+                confidence: 72,
+                btts: "Yes",
+                bttsConfidence: 65,
+                factors: [
+                    "City home advantage (W9 D1 L0)",
+                    "Salah in top form (8 goals in 10 games)",
+                    "No major injuries for either side",
+                    "Dry conditions expected"
+                ]
+            },
+            {
+                id: 2,
+                league: "La Liga",
+                homeTeam: "Barcelona",
+                awayTeam: "Real Madrid",
+                time: "20:00",
+                date: "2023-11-12",
+                prediction: "X",
+                confidence: 48,
+                btts: "Yes",
+                bttsConfidence: 78,
+                factors: [
+                    "El Clásico history of close matches",
+                    "Benzema doubtful with minor injury",
+                    "Both teams scored in last 5 meetings",
+                    "Referee tendencies for few cards"
+                ]
+            },
+            {
+                id: 3,
+                league: "Serie A",
+                homeTeam: "Inter Milan",
+                awayTeam: "Juventus",
+                time: "18:00",
+                date: "2023-11-12",
+                prediction: "1",
+                confidence: 61,
+                btts: "No",
+                bttsConfidence: 62,
+                factors: [
+                    "Inter strong home record",
+                    "Juve missing 3 key defenders",
+                    "Recent transfer boosted Inter midfield",
+                    "Rain likely during match"
+                ]
+            },
+            {
+                id: 4,
+                league: "Bundesliga",
+                homeTeam: "Bayern Munich",
+                awayTeam: "Dortmund",
+                time: "17:30",
+                date: "2023-11-12",
+                prediction: "1",
+                confidence: 79,
+                btts: "Yes",
+                bttsConfidence: 81,
+                factors: [
+                    "Bayern home dominance this season",
+                    "Dortmund weak defense away",
+                    "Both teams scored in last 8 Der Klassikers",
+                    "No significant injuries reported"
+                ]
+            },
+            {
+                id: 5,
+                league: "Ligue 1",
+                homeTeam: "PSG",
+                awayTeam: "Marseille",
+                time: "20:00",
+                date: "2023-11-12",
+                prediction: "1",
+                confidence: 85,
+                btts: "Yes",
+                bttsConfidence: 70,
+                factors: [
+                    "PSG unbeaten at home this season",
+                    "Marseille poor away form",
+                    "Mbappé scoring streak (7 games)",
+                    "Referee favors home teams statistically"
+                ]
+            },
+            {
+                id: 6,
+                league: "Premier League",
+                homeTeam: "Arsenal",
+                awayTeam: "Chelsea",
+                time: "16:30",
+                date: "2023-11-12",
+                prediction: "X",
+                confidence: 52,
+                btts: "No",
+                bttsConfidence: 57,
+                factors: [
+                    "Both teams inconsistent form",
+                    "Key midfield battle expected",
+                    "Stamford Bridge pitch condition excellent",
+                    "Historical low-scoring matches"
+                ]
+            }
+        ];
+
+        // Function to populate the ticker
+        function populateTicker() {
+            const ticker = document.getElementById('matchTicker');
+            ticker.innerHTML = '';
+            
+            matches.forEach(match => {
+                const tickerItem = document.createElement('div');
+                tickerItem.className = 'ticker-item';
+                
+                tickerItem.innerHTML = `
+                    <span class="match-time">${match.time}</span>
+                    <span class="league-badge">${match.league}</span>
+                    <span class="match-teams">${match.homeTeam} vs ${match.awayTeam}</span>
+                `;
+                
+                ticker.appendChild(tickerItem);
+            });
+        }
+
+        // Function to generate prediction cards
+        function generatePredictionCards() {
+            const container = document.getElementById('predictionsContainer');
+            container.innerHTML = '';
+            
+            matches.forEach(match => {
+                const card = document.createElement('div');
+                card.className = 'prediction-card';
+                
+                // Determine confidence class
+                let confidenceClass = 'confidence-low';
+                if (match.confidence >= 60) confidenceClass = 'confidence-high';
+                else if (match.confidence >= 50) confidenceClass = 'confidence-medium';
+                
+                let bttsConfidenceClass = 'confidence-low';
+                if (match.bttsConfidence >= 60) bttsConfidenceClass = 'confidence-high';
+                else if (match.bttsConfidence >= 50) bttsConfidenceClass = 'confidence-medium';
+                
+                // Get prediction text
+                let predictionText = '';
+                if (match.prediction === '1') predictionText = 'Home Win';
+                else if (match.prediction === '2') predictionText = 'Away Win';
+                else predictionText = 'Draw';
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>${match.league}</div>
+                        <div class="match-time-small">Today, ${match.time}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="teams">
+                            <div class="team">
+                                <div class="team-logo">${match.homeTeam.substring(0, 2)}</div>
+                                <div class="team-name">${match.homeTeam}</div>
+                            </div>
+                            <div class="vs">VS</div>
+                            <div class="team">
+                                <div class="team-logo">${match.awayTeam.substring(0, 2)}</div>
+                                <div class="team-name">${match.awayTeam}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="prediction-details">
+                            <div class="prediction-item">
+                                <div>Prediction:</div>
+                                <div><strong>${predictionText}</strong></div>
+                            </div>
+                            <div class="prediction-item">
+                                <div>Confidence:</div>
+                                <div class="confidence">
+                                    <span>${match.confidence}%</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill ${confidenceClass}" style="width: ${match.confidence}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="prediction-item">
+                                <div>Both Teams to Score:</div>
+                                <div><strong>${match.btts}</strong></div>
+                            </div>
+                            <div class="prediction-item">
+                                <div>BTTS Confidence:</div>
+                                <div class="confidence">
+                                    <span>${match.bttsConfidence}%</span>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill ${bttsConfidenceClass}" style="width: ${match.bttsConfidence}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-analysis">
+                            <h4><span class="ai-badge">AI</span> Analysis Factors</h4>
+                            <div class="factors">
+                                ${match.factors.map(factor => `
+                                    <div class="factor">
+                                        <span class="factor-icon">•</span> ${factor}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="accuracy">
+                            <span>Last prediction:</span>
+                            <span class="correct">✓ Correct</span>
+                        </div>
+                        <div class="last-updated">Updated 15 min ago</div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // Function to update predictions based on filters
+        function updatePredictions() {
+            // In a real application, this would filter the data
+            // For this demo, we'll just regenerate the same cards
+            generatePredictionCards();
+        }
+
+        // Ticker control functions
+        function pauseTicker() {
+            const ticker = document.getElementById('matchTicker');
+            ticker.style.animationPlayState = 'paused';
+        }
+
+        function playTicker() {
+            const ticker = document.getElementById('matchTicker');
+            ticker.style.animationPlayState = 'running';
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            populateTicker();
+            generatePredictionCards();
+            
+            // Set today's date as default for date picker
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date-picker').value = today;
+        });
+    </script>
+</body>
+</html>
